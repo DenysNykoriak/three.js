@@ -1,6 +1,13 @@
 import gsap from "gsap";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import GUI from "lil-gui";
+
+const gui = new GUI();
+const debugObject = {
+	wireframe: false,
+	segments: 1,
+};
 
 const canvas = document.querySelector("canvas.webgl");
 
@@ -34,6 +41,57 @@ const cube3 = new THREE.Mesh(
 );
 cube3.position.x = 1.5;
 group.add(cube3);
+// gui.add(cube3.position, "x").min(-3).max(3).step(0.01).name("cube3X");
+
+gui
+	.add(debugObject, "wireframe")
+	.name("wireframe")
+	.onChange(() => {
+		if (debugObject.wireframe) {
+			cube1.material.wireframe = true;
+			cube2.material.wireframe = true;
+			cube3.material.wireframe = true;
+		} else {
+			cube1.material.wireframe = false;
+			cube2.material.wireframe = false;
+			cube3.material.wireframe = false;
+		}
+	});
+gui
+	.add(debugObject, "segments")
+	.min(1)
+	.max(100)
+	.step(1)
+	.name("segments")
+	.onChange(() => {
+		cube1.geometry.dispose();
+		cube1.geometry = new THREE.BoxGeometry(
+			1,
+			1,
+			1,
+			debugObject.segments,
+			debugObject.segments,
+			debugObject.segments,
+		);
+		cube2.geometry.dispose();
+		cube2.geometry = new THREE.BoxGeometry(
+			1,
+			1,
+			1,
+			debugObject.segments,
+			debugObject.segments,
+			debugObject.segments,
+		);
+		cube3.geometry.dispose();
+		cube3.geometry = new THREE.BoxGeometry(
+			1,
+			1,
+			1,
+			debugObject.segments,
+			debugObject.segments,
+			debugObject.segments,
+		);
+	});
 
 // Camera
 const sizes = {
