@@ -9,6 +9,16 @@ const debugObject = {
 	segments: 1,
 };
 
+const loadingManager = new THREE.LoadingManager();
+loadingManager.onStart = () => {};
+loadingManager.onLoad = () => {
+	console.log("loaded");
+};
+loadingManager.onProgress = () => {};
+loadingManager.onError = (url) => {
+	console.error(`error loading: ${url}`);
+};
+
 const canvas = document.querySelector("canvas.webgl");
 
 // Scene
@@ -18,13 +28,26 @@ const scene = new THREE.Scene();
 // const axesHelper = new THREE.AxesHelper(2);
 // scene.add(axesHelper);
 
+//Texture
+const textureLoader = new THREE.TextureLoader(loadingManager);
+const doorColorTexture = textureLoader.load("/assets/door/color.jpg");
+doorColorTexture.colorSpace = THREE.SRGBColorSpace;
+const doorAlphaTexture = textureLoader.load("/assets/door/alpha.jpg");
+const doorHeightTexture = textureLoader.load("/assets/door/height.png");
+const doorNormalTexture = textureLoader.load("/assets/door/normal.jpg");
+const doorAmbientOcclusionTexture = textureLoader.load(
+	"/assets/door/ambientOcclusion.jpg",
+);
+const doorMetallicTexture = textureLoader.load("/assets/door/metallic.jpg");
+const doorRoughnessTexture = textureLoader.load("/assets/door/roughness.jpg");
+
 //Object
 const group = new THREE.Group();
 scene.add(group);
 
 const cube1 = new THREE.Mesh(
 	new THREE.BoxGeometry(1, 1, 1),
-	new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+	new THREE.MeshBasicMaterial({ map: doorColorTexture }),
 );
 cube1.position.x = -1.5;
 group.add(cube1);
