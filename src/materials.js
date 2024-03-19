@@ -1,11 +1,20 @@
 import * as THREE from "three";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const canvas = document.querySelector("canvas.webgl");
 
 // Scene
 const scene = new THREE.Scene();
 
-//TODO: add lights and hdr environment (rgbe) to the scene
+//Environment
+const rgbeLoader = new RGBELoader();
+rgbeLoader.load("/assets/environmentMaps/2k.hdr", (environmentMap) => {
+	environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+
+	scene.background = environmentMap;
+	scene.environment = environmentMap;
+});
 
 const sizes = {
 	width: window.innerWidth,
@@ -78,6 +87,10 @@ window.addEventListener("resize", () => {
 	renderer.setSize(sizes.width, sizes.height);
 });
 
+//Controls
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+
 //Animation
 const clock = new THREE.Clock();
 
@@ -88,6 +101,7 @@ const tick = () => {
 	plane.rotation.y = elapsedTime * 0.2;
 	torus.rotation.y = elapsedTime * 0.2;
 
+	controls.update();
 	renderer.render(scene, camera);
 
 	window.requestAnimationFrame(tick);
